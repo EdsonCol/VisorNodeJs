@@ -1,0 +1,23 @@
+{
+  "name": "visornodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdsonCol/VisorNodeJs.git"
+  },
+  "author": "Edson Colmenares",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EdsonCol/VisorNodeJs/issues"
+  },
+  "homepage": "https://github.com/EdsonCol/VisorNodeJs#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.0",
+    "pg": "^8.13.0"
+  }
+}
