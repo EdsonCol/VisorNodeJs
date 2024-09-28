@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
     <title>Prueba con NodeJs</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 <body>
-    <header> 
-        Prueba 
-    </header>
-    
-    <h1>Selecciona una tabla</h1>
-    
+    <section>
+    <div id="map"></div>
+        <h1>Selecciona una tabla:</h1>
+    </section>
     <!-- Selector de tablas -->
     <select id="tablaSelector">
         <option value="">Selecciona una tabla</option>
@@ -29,7 +29,8 @@
             <!-- Aquí se generarán dinámicamente las filas de la tabla -->
         </tbody>
     </table>
-
+    
     <script src="scripts/tabla.js"></script>
+    <script src="scripts/map.js"></script>
 </body>
 </html>
