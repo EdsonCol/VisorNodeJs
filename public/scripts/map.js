@@ -1,8 +1,15 @@
-var map = L.map('map', {
-    center: [6.2607491,-75.5743929],
-    zoom: 13
-});
+// Inicializar el mapa
+var map = L.map('map').setView([6.268658, -75.565801], 13);
 
+// Mapas base
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+});
 
 var darkmap = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
 	minZoom: 0,
@@ -11,78 +18,28 @@ var darkmap = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dar
 	ext: 'png'
 }).addTo(map);
 
-var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
-});
+var baseMaps = {
+    "OpenStreetMap": osm,
+    "Esri World Imagery": Esri_WorldImagery,
+    "DarkMap": darkmap
+};
 
-var sitios_turisticos
-// Cargar el archivo GeoJSON
-fetch('./data/sitios_turisticos.geojson')
-    .then(response => response.json())
-    .then(data => {
-        // Añadir el GeoJSON al mapa con estilos y eventos
-        sitios_turisticos = L.geoJSON(data, {
-            pointToLayer: function (feature, latlng) {
-                // Crear un marcador con el ícono personalizado
-                return L.marker(latlng, { icon: customIconSitios });
-            },
-            style: style_sitios_turisticos,
-            onEachFeature: function (feature, layer) {
-                // Añadir popups para los sitios turísticos
-                if (feature.properties && feature.properties.nombresiti) {
-                    layer.bindPopup("Sitio turístico: " + feature.properties.nombresiti);
-            }}
-        }).addTo(map);
-        layerControl.addOverlay(sitios_turisticos, 'Sitios turísticos');
-    })
-    .catch(err => console.error('Error cargando el archivo GeoJSON: ', err));
 
-// Definir la función de estilo para los sitios turísticos
-style_sitios_turisticos = {
-    color: 'blue',
-    weight: 5,
-    fillColor: 'blue',
+// Control de capas para los overlays
+var overlayMaps = {};
+
+// Agregar control de capas al mapa
+var layerControl = L.control.layers(baseMaps, overlayMaps, darkmap).addTo(map);
+
+var marker = L.marker([6.268658, -75.565801]).addTo(map);
+marker.bindPopup("<b>ESTO ES UN POPUP</b><br>ESTO ES MEDELLIN")
+
+var circle = L.circle([6.268658, -75.565801], {
+    color: 'red',
+    fillColor: '#f03',
     fillOpacity: 0.5,
-    shadowSize: 10
-} 
-
-var customIconSitios = L.icon({
-    iconUrl: './icons/sitios_t.svg',  // Ruta a la imagen del icono
-    iconSize: [32, 32],               // Tamaño del ícono (ancho, alto)
-    iconAnchor: [16, 32],             // Punto de anclaje del ícono (coordenadas en la imagen)
-    popupAnchor: [0, -32],             // Punto de anclaje del popup relativo al ícono
-});
-
-
-var camaras
-fetch('./data/camaras_wgs84.geojson')
-    .then(response => response.json())
-    .then(data => {
-        camaras = L.geoJSON(data, {
-            pointToLayer: function (feature, latlng) {
-                // Crear un marcador con el ícono personalizado
-                return L.marker(latlng, { icon: customIconsCamaras });
-            },
-
-            onEachFeature: function (feature, layer) {
-                // Añadir popups para las camaras
-                if (feature.properties && feature.properties.localizaci) {
-                    layer.bindPopup("Localización: " + feature.properties.localizaci);
-            }}
-        }).addTo(map);
-        layerControl.addOverlay(camaras, 'Camaras');
-    })
-    .catch(err => console.error('Error cargando el archivo GeoJSON: ', err));
-
-
-
-var customIconsCamaras = L.icon({
-    iconUrl:'./icons/camara.svg',
-    iconSize: [32,32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0,-32]
-})
+    radius: 500
+}).addTo(map);
 
 var barrios
 // Cargar el archivo GeoJSON
@@ -110,7 +67,7 @@ function style_barrios(feature) {
         weight: 2, 
         opacity: 1, 
         color: 'black', 
-        fillOpacity: 0.7
+        fillOpacity: 0.3
     };
 }
 
@@ -137,47 +94,52 @@ function getColor(limitecomu) {
     }
 }
 
-var vias
-// Cargar el archivo GeoJSON
-fetch('./data/vias.geojson')
+
+
+// Función para cargar tablas con geometría y agregarlas al control de capas
+fetch('/tablasgeo')
     .then(response => response.json())
-    .then(data => {
-        // Añadir el GeoJSON al mapa con estilos y eventos
-        vias = L.geoJSON(data, {
-            style: style_vias
-        }).addTo(map);
-        layerControl.addOverlay(vias, 'Vias');
-    })
+    .then(tablas => {
+    console.log('Tablas con geometría:', tablas); // Verifica la estructura de los datos
 
-style_vias = {
-    color:'red',
-    weight: 1,
-    dash: [10, 10]
-}
+    tablas.forEach(tabla => {
+        var nombreTabla = tabla.table_name;
 
-//Resaltar barrio revisar
-var highlightLayer;
-function highlightFeature(e) {
-    highlightLayer = e.target;
-    if (e.target.feature.geometry.type === 'LineString' || e.target.feature.geometry.type === 'MultiLineString') {
-    highlightLayer.setStyle({
-        color: '#ffff00',
-    });
-    } else {
-        highlightLayer.setStyle({
-                fillColor: '#ffff00',
-                fillOpacity: 1
-            });
-            }
+      // Crear una capa vacía para esta tabla y añadirla al control de capas
+        var layer = L.layerGroup();
+        console.log('Añadiendo capa:', nombreTabla); // Verifica que se están añadiendo las capas
+        layerControl.addOverlay(layer, nombreTabla); // Añadir al control de capas
+
+      // Escuchar cuando el usuario activa la capa en el control
+        map.on('overlayadd', function(event) {
+        if (event.name === nombreTabla) {
+          console.log('Cargando datos para la tabla:', nombreTabla); // Verifica que la tabla esté siendo seleccionada
+
+          // Cargar los datos de la tabla y mostrarlos en el mapa
+            fetch(`/tablas/${nombreTabla}`)
+            .then(response => response.json())
+            .then(data => {
+              console.log('Datos GeoJSON para', nombreTabla, data); // Verifica los datos recibidos
+              var geoLayer = L.geoJSON(data, {
+                onEachFeature: function (feature, layer) {
+                  if (feature.properties) {
+                    layer.bindPopup(JSON.stringify(feature.properties)); // Personaliza el popup si lo deseas
+                  }
+                }
+              });
+              layer.addLayer(geoLayer); // Añadir los datos a la capa
+            })
+            .catch(err => console.error('Error cargando los datos de la tabla:', err));
         }
+      });
 
-//Selector de capas y mapa base
-var baseMaps = {
-    "OpenStreetMap": osm,
-    "DarkMap": darkmap
-};
+      // Escuchar cuando el usuario desactiva la capa en el control
+      map.on('overlayremove', function(event) {
+        if (event.name === nombreTabla) {
+          layer.clearLayers();  // Limpia la capa cuando se desactiva
+        }
+      });
+    });
+  })
+  .catch(err => console.error('Error obteniendo las tablas con geometría:', err));
 
-
-var overley = {}
-
-var layerControl = L.control.layers(baseMaps, overley).addTo(map);

@@ -69,15 +69,27 @@ app.get('/tablasgeo', async (req, res) => {
 });
 
 // Ruta para consultar datos de una tabla específica en el esquema 'public'
+// Endpoint para consultar los datos de una tabla específica en formato GeoJSON
 app.get('/tablas/:nombreTabla', async (req, res) => {
     const nombreTabla = req.params.nombreTabla;
 
     try {
-      // Ejecutar consulta a la tabla específica
+        // Ejecutar la consulta para obtener los datos de la tabla en formato GeoJSON
         const result = await client.query(`
-        SELECT * FROM public.${nombreTabla};
+            SELECT ST_AsGeoJSON(geom) AS geometry, * 
+            FROM public.${nombreTabla};
         `);
-      res.json(result.rows);  // Devuelve los datos de la tabla en formato JSON
+
+        // Formatear los datos como un FeatureCollection de GeoJSON
+        const geojson = {
+            type: "FeatureCollection",
+            features: result.rows.map(row => ({
+                type: "Feature",
+                geometry: JSON.parse(row.geometry),
+                properties: row  // Puedes ajustar las propiedades que desees incluir
+            }))
+        };
+        res.json(geojson);
     } catch (err) {
         console.error('Error ejecutando la consulta', err.stack);
         res.status(500).send(`Error al consultar la tabla ${nombreTabla}`);
