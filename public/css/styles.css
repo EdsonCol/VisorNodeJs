@@ -38,3 +38,13 @@ html, body {
 .floating-banner .icon img {
     height: 20px;
 }
+
+/* Eliminar el borde y los márgenes del popup de Leaflet */
+.leaflet-popup-content-wrapper {
+    padding: 2px !important; /* Elimina el margen interno */
+    border-radius: 8px !important; /* Ajusta el borde para que sea más pequeño */
+}
+
+.leaflet-popup-content {
+    margin: 0px !important; /* Elimina el margen adicional */
+}
