@@ -1,5 +1,166 @@
-// Inicializar el mapa
-var map = L.map('map').setView([6.268658, -75.565801], 13);
+// Coordenadas y nivel de zoom iniciales
+const initialCoordinates = [6.268658, -75.565801];
+const initialZoom = 13;
+
+// Inicializar el mapa sin el control de zoom predeterminado
+var map = L.map('map', {
+    zoomControl: false // Desactivar el control de zoom predeterminado
+}).setView(initialCoordinates, initialZoom);
+
+// Agregar el control de zoom personalizado
+L.control.zoom({
+    position: 'bottomleft' // Cambia la posición si lo deseas
+}).addTo(map);
+
+// Crear un control personalizado para restablecer la vista
+var homeButton = L.Control.extend({
+    options: { position: 'bottomleft' },
+
+    onAdd: function (map) {
+        // Crear un contenedor para el botón
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+
+        // Estilo del botón
+        container.style.backgroundColor = '#6EAA39';
+        container.style.width = '31px';
+        container.style.height = '31px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.cursor = 'pointer';
+        container.innerHTML = '<img src="icons/home.svg" style="width:21px; height:21px;">';
+
+        // Evento de clic para restablecer la vista
+        container.onclick = function () {
+            map.setView(initialCoordinates, initialZoom);
+        };
+
+        return container;
+    }
+});
+
+// Agregar el botón al mapa
+map.addControl(new homeButton());
+
+
+// Crear un control personalizado para la leyenda 
+var legend = L.control({ position: 'bottomright' });
+
+const colorSistemas = {
+  "2A": "#3A91FA",
+  "2B": "#10F90A",
+  "3A": "#FE360A",
+  "5A": "#E1E1E1",
+  "6A": "#FB0BAC",
+  "6B": "#0018F3",
+  "6C": "#FED317",
+  "6D": "#26EEEC",
+  "6E": "#FAB3BC",
+  "6F": "#E61100",
+  "6G": "#52D962",
+  "6H": "#B885E7",
+  "8A": "#7B1EBB",
+  "Circular 286": "#DC6505",
+  "Circular 304, 305, 308, 308D, 309, 309D": "#ED96F8",
+  "Circular 313": "#E40CFB",
+  "Circular 315 Y 316": "#E40CFB",
+  "Circular Coonatra 300, 301, 310, 311": "#C7D246",
+  "Circular Derecha 303": "#36E700",
+  "Circular Izquierda 302": "#0E9471",
+};
+
+legend.onAdd = function (map) {
+    // Crear un contenedor para la leyenda
+    var div = L.DomUtil.create('div', 'info legend');
+    div.style.position = 'fixed'; // Hace que la leyenda sea fija y no afecte el flujo
+    div.style.bottom = '20px'; // Asegura que esté en la parte inferior de la pantalla
+    div.style.right = '40px'; // Ajusta la posición desde la izquierda
+    div.style.backgroundColor = '#6EAA39';
+    div.style.color = 'white';
+    div.style.padding = '10px';
+    div.style.borderRadius = '5px';
+    div.style.display = 'none';
+    div.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
+
+    // Contenido de la leyenda
+    div.innerHTML += "<h4>Leyenda</h4>";
+
+    // Grupo: Capas Base
+    div.innerHTML += "<h5>Capas Base</h5>";
+    div.innerHTML += `<i style="border: 1px dashed black; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></i> Barrios<br>`;
+    div.innerHTML += `<i style="border: 2px solid black; width: 15px; height: 15px; display: inline-block; margin-right: 5px;"></i> Comunas<br>`;
+
+    // Separador entre grupos
+    div.innerHTML += "<hr style='border: 1px solid white;'>";
+
+    // Grupo: Sistema Integrado
+    div.innerHTML += "<h5>Sistema Integrado</h5>";
+
+    div.innerHTML += "<strong>Estaciones de Metro</strong><br>";
+    div.innerHTML += '<img src="icons/metro_lineaA.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea A<br>';
+    div.innerHTML += '<img src="icons/metro_lineaB.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea B<br>';
+
+    div.innerHTML += "<strong>Estaciones de Metrocable</strong><br>";
+    div.innerHTML += '<img src="icons/metrocable_lineaH.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea H<br>';
+    div.innerHTML += '<img src="icons/metrocable_lineaJ.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea J<br>';
+    div.innerHTML += '<img src="icons/metrocable_lineaK.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea K<br>';
+    div.innerHTML += '<img src="icons/metrocable_lineaL.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea L<br>';
+    div.innerHTML += '<img src="icons/metrocable_lineaM.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea M<br>';
+    div.innerHTML += '<img src="icons/metrocable_lineaP.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea P<br>';
+
+    div.innerHTML += "<strong>Estaciones de Metroplus</strong><br>";
+    div.innerHTML += '<img src="icons/metroplus_linea1.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea 1<br>';
+    div.innerHTML += '<img src="icons/metroplus_linea2.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea 2<br>';
+
+    div.innerHTML += "<strong>Estaciones de Tranvía</strong><br>";
+    div.innerHTML += '<img src="icons/tranvia_lineaT.svg" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Línea T<br>';
+
+    // Separador entre grupos
+    div.innerHTML += "<hr style='border: 1px solid white;'>";
+
+    // Grupo: Sistema de Buses
+    div.innerHTML += "<h5>Sistema de Buses</h5>";
+    div.innerHTML += '<img src="icons/busStop.png" style="width: 15px; height: 15px; vertical-align: middle; margin-right: 5px;"> Paradas<br>';
+    for (const [nombre, color] of Object.entries(colorSistemas)) {
+      div.innerHTML += `<i style="background: ${color}; width: 20px; height: 3px; display: inline-block; margin-right: 5px;"></i> ${nombre}<br>`;
+  }
+    return div;
+};
+
+// Añadir la leyenda al mapa
+legend.addTo(map);
+
+// Crear un botón para mostrar/ocultar la leyenda
+var legendToggleButton = L.control({ position: 'bottomright' });
+
+legendToggleButton.onAdd = function (map) {
+    var button = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+    button.innerHTML = '<img src="icons/leyenda.svg" style="width: 30px; height: 30px;">';
+    button.style.backgroundColor = '#6EAA39';
+    button.style.cursor = 'pointer';
+    button.style.width = '40px';
+    button.style.height = '40px';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.style.display = 'flex';
+    button.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
+
+    // Evento de clic para alternar la visibilidad de la leyenda
+    button.onclick = function () {
+        var legendDiv = document.querySelector('.info.legend');
+        if (legendDiv.style.display === 'none') {
+            legendDiv.style.display = 'block';
+        } else {
+            legendDiv.style.display = 'none';
+        }
+    };
+
+    return button;
+};
+
+// Añadir el botón de leyenda al mapa
+legendToggleButton.addTo(map);
+
 
 // Mapas base
 var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -24,14 +185,22 @@ var baseMaps = {
     "Dark Map": darkmap
 };
 
+const aliasCapas = {
+  "comunas": "Comunas",
+  "barrios": "Barrios",
+  "estaciones_tmasivo": "Estaciones de Transporte Masivo",
+  "rutas_transporte": "Rutas de Buses",
+  "paradas_wgs84": "Paradas de Buses"
+};
 
 // Control de capas para los overlays
 var overlayMaps = {};
 
 // Agregar control de capas al mapa
-var layerControl = L.control.layers(baseMaps, overlayMaps, darkmap).addTo(map);
+var layerControl = L.control.layers(baseMaps, overlayMaps, ).addTo(map);
 
-L.control.zoom().setPosition('bottomright').addTo(map);
+
+
 
 // Función para definir el estilo de la capa de Comunas
 function estiloComunas() {
@@ -53,8 +222,6 @@ function estiloBarrios() {
       fillOpacity: 0       
   };
 }
-
-
 
 // Función para definir el estilo de la capa Estaciones
 function estiloEstaciones(feature, latlng) {
@@ -83,29 +250,7 @@ function estiloEstaciones(feature, latlng) {
   return L.marker(latlng, { icon: icono });
 }
 
-const colorSistemas = {
-  "2A": "#3A91FA",
-  "2B": "#10F90A",
-  "3A": "#FE360A",
-  "5A": "#E1E1E1",
-  "6A": "#FB0BAC",
-  "6B": "#0018F3",
-  "6C": "#FED317",
-  "6D": "#26EEEC",
-  "6E": "#FAB3BC",
-  "6F": "#E61100",
-  "6G": "#52D962",
-  "6H": "#B885E7",
-  "8A": "#7B1EBB",
-  "Circular 286": "#DC6505",
-  "Circular 304, 305, 308, 308D, 309, 309D": "#ED96F8",
-  "Circular 313": "#E40CFB",
-  "Circular 315 Y 316": "#E40CFB",
-  "Circular Coonatra 300, 301, 310, 311": "#C7D246",
-  "Circular Derecha 303": "#36E700",
-  "Circular Izquierda 302": "#0E9471",
-  "default": "gray",
-};
+
 
 const colorLineas = {
   "Línea 1": "#007C88",
@@ -285,102 +430,82 @@ fetch('/tablasgeo')
             if (!capaConfig) return; // Salta las tablas sin configuración específica
 
             const layer = L.layerGroup();
-            layerControl.addOverlay(layer, nombreTabla);
-            
-            if (nombreTabla == "comunas") {
+            const alias = aliasCapas[nombreTabla] || nombreTabla;
+            layerControl.addOverlay(layer, alias); // Añadir al control de capas
+
+            // Cargar y añadir al mapa cada capa solo una vez
+            if (nombreTabla === "comunas") {
+                fetch(`/tablas/${nombreTabla}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const geoLayer = L.geoJSON(data, { style: estiloComunas });
+                        layer.addLayer(geoLayer);
+                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                    })
+                    .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
+            } else if (nombreTabla === "barrios") {
+                fetch(`/tablas/${nombreTabla}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const geoLayer = L.geoJSON(data, { style: estiloBarrios });
+                        layer.addLayer(geoLayer);
+                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                    })
+                    .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
+            } else if (nombreTabla === "estaciones_tmasivo") {
                 fetch(`/tablas/${nombreTabla}`)
                     .then(response => response.json())
                     .then(data => {
                         const geoLayer = L.geoJSON(data, {
-                            style: estiloComunas,         
+                            pointToLayer: estiloEstaciones,
+                            onEachFeature: popupEstaciones
                         });
                         layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa directamente al mapa
+                        layer.addTo(map); // Añadir la capa al mapa al inicio
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
-                  } else if(nombreTabla == "barrios") {
-                    fetch(`/tablas/${nombreTabla}`)
+            } else if (nombreTabla === "rutas_transporte") {
+                fetch(`/tablas/${nombreTabla}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const geoLayer = L.geoJSON(data, { style: estiloRutas });
+                        layer.addLayer(geoLayer);
+                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                    })
+                    .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
+            } else if (nombreTabla === "paradas_wgs84") {
+                const clusterGroup = L.markerClusterGroup();
+                fetch(`/tablas/${nombreTabla}`)
                     .then(response => response.json())
                     .then(data => {
                         const geoLayer = L.geoJSON(data, {
-                            style: estiloBarrios,         
+                            pointToLayer: (feature, latlng) => estiloParadas(feature, latlng),
+                            onEachFeature: popupParadas
                         });
-                        layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa directamente al mapa
+                        clusterGroup.addLayer(geoLayer);
+                        layer.addLayer(clusterGroup);
+                        layer.addTo(map); // Añadir el grupo de clusters al mapa al inicio
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
-                  } else if(nombreTabla == "estaciones_tmasivo") {
-                    fetch(`/tablas/${nombreTabla}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const geoLayer = L.geoJSON(data, {
-                          pointToLayer: estiloEstaciones,
-                          onEachFeature: popupEstaciones
-                        });
-                        layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa directamente al mapa
-                    })
-                    .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
-                  } else if(nombreTabla == "barrios") {
-                    fetch(`/tablas/${nombreTabla}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const geoLayer = L.geoJSON(data, {
-                            style: estiloBarrios,         
-                        });
-                        layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa directamente al mapa
-                    })
-                    .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
-                  } else if(nombreTabla == "rutas_transporte") {
-                    map.on('overlayadd', event => {
-                      if (event.name === nombreTabla) {
-                          fetch(`/tablas/${nombreTabla}`)
-                              .then(response => response.json())
-                              .then(data => {
-                                  const geoLayer = L.geoJSON(data, {
-                                      style: estiloRutas
-                                  });
-                                  layer.addLayer(geoLayer);
-                              })
-                              .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
-                      }
-                  });
-                } else if (nombreTabla == "paradas_wgs84") {
-                  // Configurar capa de clusters para "paradas_wgs84"
-                  map.on('overlayadd', event => {
-                      if (event.name === nombreTabla) {
-                          const clusterGroup = L.markerClusterGroup();
-  
-                          fetch(`/tablas/${nombreTabla}`)
-                              .then(response => response.json())
-                              .then(data => {
-                                  const geoLayer = L.geoJSON(data, {
-                                      pointToLayer: (feature, latlng) => estiloParadas(feature,latlng),
-                                      onEachFeature: popupParadas
-                                  });
-  
-                                  // Añadir todos los puntos del geoLayer al grupo de clusters
-                                  clusterGroup.addLayer(geoLayer);
-  
-                                  // Agregar el grupo de clusters al mapa
-                                  map.addLayer(clusterGroup);
-  
-                                  // Guardar el grupo de clusters en "layer" para limpiar al desactivar
-                                  layer.addLayer(clusterGroup);
-                              })
-                              .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
-                      }
-                  });
-              }
+            }
 
-            // Evento para limpiar la capa cuando se desactiva
+            // Evento para quitar la capa del mapa cuando se desactiva en el control de capas
             map.on('overlayremove', event => {
                 if (event.name === nombreTabla) {
-                    layer.clearLayers();
+                    map.removeLayer(layer);
+                }
+            });
+
+            // Evento para añadir la capa al mapa cuando se activa en el control de capas
+            map.on('overlayadd', event => {
+                if (event.name === nombreTabla) {
+                    map.addLayer(layer);
                 }
             });
         });
     })
     .catch(err => console.error('Error obteniendo las tablas con geometría:', err));
+
+
+
 

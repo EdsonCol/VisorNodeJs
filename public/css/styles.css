@@ -2,7 +2,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    
+    font-family: "Onest Variable", system-ui, sans-serif;
 }
 
 #map {
@@ -14,11 +14,15 @@ html, body {
     z-index: 1;
 }
 
+td{
+    font-size: 12px
+}
+
 .floating-banner {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: #6DBC82;
+    background-color: #6EAA39;
     color: white;
     padding: 10px 20px;
     border-radius: 20px;
@@ -29,7 +33,7 @@ html, body {
 }
 
 .floating-banner .icon {
-    background-color: #244F36;
+    background-color: #6EAA39;
     padding: 10px;
     border-radius: 50%;
     margin-left: auto;
@@ -37,6 +41,22 @@ html, body {
 
 .floating-banner .icon img {
     height: 20px;
+}
+
+.info.legend h5 {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: white;
+    text-align: center;
+}
+
+.info.legend h4 {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;    
 }
 
 /* Eliminar el borde y los márgenes del popup de Leaflet */
@@ -47,4 +67,59 @@ html, body {
 
 .leaflet-popup-content {
     margin: 0px !important; /* Elimina el margen adicional */
+}
+
+/* Estilo personalizado para el control de zoom */
+.leaflet-control-zoom {
+    background-color: #6EAA39 !important; /* Cambiar el color de fondo */
+    border: none !important;
+    border-radius: 5px !important;
+    overflow: hidden !important; /* Esto asegura que los bordes sean redondeados */
+}
+
+/* Ajuste para los botones de acercar y alejar dentro del control de zoom */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+    width: 30px !important; /* Ajustar el ancho */
+    height: 30px !important; /* Ajustar el alto */
+    line-height: 30px !important; /* Centrar el texto verticalmente */
+    text-align: center !important; /* Centrar el texto horizontalmente */
+    background-color: #6EAA39 !important; /* Color de fondo para los botones */
+    color: white !important; /* Color del texto */
+    font-size: 18px !important; /* Tamaño de la fuente */
+    cursor: pointer !important;
+    border: none !important; /* Elimina bordes alrededor de los botones */
+}
+
+/* Agregar efecto hover para mejorar la experiencia visual */
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+    background-color: #5C9932 !important; /* Color al hacer hover */
+}
+
+/* Fondo y estilo para el contenedor del control de capas */
+.leaflet-control-layers {
+    background-color: #6EAA39 !important; /* Color de fondo */
+    border: none;
+    border-radius: 5px;
+    overflow: hidden;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Estilo para los encabezados y etiquetas de cada capa */
+.leaflet-control-layers label {
+    color: white; /* Color del texto */
+}
+
+/* Cambiar el color de los checkboxes cuando se seleccionan */
+.leaflet-control-layers input[type="checkbox"] {
+    accent-color: #FFFFFF; /* Cambia el color del checkbox */
+}
+
+/* Opcional: añadir un efecto hover a cada capa */
+.leaflet-control-layers label:hover {
+    background-color: #5C9932; /* Color al pasar el mouse */
+    cursor: pointer;
 }
