@@ -1,50 +1,14 @@
-// Coordenadas y nivel de zoom iniciales
-const initialCoordinates = [6.268658, -75.565801];
-const initialZoom = 13;
+// ******** DEFINICION DE CONSTANTES ***********
 
-// Inicializar el mapa sin el control de zoom predeterminado
-var map = L.map('map', {
-    zoomControl: false // Desactivar el control de zoom predeterminado
-}).setView(initialCoordinates, initialZoom);
+//Constantes de capas
 
-// Agregar el control de zoom personalizado
-L.control.zoom({
-    position: 'bottomleft' // Cambia la posición si lo deseas
-}).addTo(map);
-
-// Crear un control personalizado para restablecer la vista
-var homeButton = L.Control.extend({
-    options: { position: 'bottomleft' },
-
-    onAdd: function (map) {
-        // Crear un contenedor para el botón
-        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-
-        // Estilo del botón
-        container.style.backgroundColor = '#6EAA39';
-        container.style.width = '31px';
-        container.style.height = '31px';
-        container.style.display = 'flex';
-        container.style.alignItems = 'center';
-        container.style.justifyContent = 'center';
-        container.style.cursor = 'pointer';
-        container.innerHTML = '<img src="icons/home.svg" style="width:21px; height:21px;">';
-
-        // Evento de clic para restablecer la vista
-        container.onclick = function () {
-            map.setView(initialCoordinates, initialZoom);
-        };
-
-        return container;
-    }
-});
-
-// Agregar el botón al mapa
-map.addControl(new homeButton());
-
-
-// Crear un control personalizado para la leyenda 
-var legend = L.control({ position: 'bottomright' });
+const aliasCapas = {
+"comunas": "Comunas",
+"barrios": "Barrios",
+"estaciones_tmasivo": "Estaciones de Transporte Masivo",
+"rutas_transporte": "Rutas de Buses",
+"paradas_wgs84": "Paradas de Buses"
+};
 
 const colorSistemas = {
   "2A": "#3A91FA",
@@ -69,18 +33,97 @@ const colorSistemas = {
   "Circular Izquierda 302": "#0E9471",
 };
 
+const iconosEstaciones = {
+  "Línea 1": { url: "icons/metroplus_linea1.svg", size: [16, 16] },
+  "Línea 2": { url: "icons/metroplus_linea2.svg", size: [16, 16] },
+  "Línea A": { url: "icons/metro_lineaA.svg", size: [20, 20] },
+  "Línea B": { url: "icons/metro_lineaB.svg", size: [20, 20] },
+  "Línea H": { url: "icons/metrocable_lineaH.svg", size: [18, 18] },
+  "Línea J": { url: "icons/metrocable_lineaJ.svg", size: [18, 18] },
+  "Línea K": { url: "icons/metrocable_lineaK.svg", size: [18, 18] },
+  "Línea L": { url: "icons/metrocable_lineaL.svg", size: [18, 18] },
+  "Línea M": { url: "icons/metrocable_lineaM.svg", size: [18, 18] },
+  "Línea P": { url: "icons/metrocable_lineaP.svg", size: [18, 18] },
+  "Línea T-A": { url: "icons/tranvia_lineaT.svg", size: [20, 20] }
+}
+
+const colorLineas = {
+  "Línea 1": "#007C88",
+  "Línea 2": "#60A9AF",
+  "Línea A": "#005496",
+  "Línea B": "#F6821F",
+  "Línea H": "#DC3591",
+  "Línea J": "#FDB913",
+  "Línea K": "#ACD258",
+  "Línea L": "#98671B",
+  "Línea M": "#6E2C8D",
+  "Línea P": "#ED1A3B",
+  "Línea T-A": "#1D9D48",
+  "default": "gray",
+};
+
+const iconosLineas={
+  "Línea 1": "icons/metroplus_linea1.svg",
+  "Línea 2": "icons/metroplus_linea2.svg",
+  "Línea A": "icons/metro_lineaA.svg",
+  "Línea B": "icons/metro_lineaB.svg",
+  "Línea H": "icons/metrocable_lineaH.svg",
+  "Línea J": "icons/metrocable_lineaJ.svg",
+  "Línea K": "icons/metrocable_lineaK.svg",
+  "Línea L": "icons/metrocable_lineaL.svg",
+  "Línea M": "icons/metrocable_lineaM.svg",
+  "Línea P": "icons/metrocable_lineaP.svg",
+  "Línea T-A": "icons/tranvia_lineaT.svg",
+  "default": "icons/metroplus_linea1.svg",
+}
+
+
+// ******** CONFIGURACIÓN DEL MAPA ********
+// Coordenadas y nivel de zoom iniciales
+const initialCoordinates = [6.268658, -75.565801];
+const initialZoom = 13;
+
+// Inicializar el mapa 
+var map = L.map('map', {
+    zoomControl: false 
+}).setView(initialCoordinates, initialZoom);
+
+// Agregar el control de zoom personalizado
+L.control.zoom({
+    position: 'bottomleft'
+}).addTo(map);
+
+// Crear un botón para restablecer la vista
+var homeButton = L.Control.extend({
+  options: { position: 'bottomleft' },
+
+  onAdd: function (map) {
+      // Crear un contenedor para el botón y asignar la clase 'home-button'
+      var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom home-button');
+      
+      // Añadir el icono
+      container.innerHTML = '<img src="icons/home.svg" class="home-icon">';
+
+      // Evento de clic para restablecer la vista
+      container.onclick = function () {
+          map.setView(initialCoordinates, initialZoom);
+      };
+
+      return container;
+  }
+});
+// Agregar el botón al mapa
+map.addControl(new homeButton());
+
+
+// Crear un control personalizado para la leyenda 
+var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
     // Crear un contenedor para la leyenda
-    var div = L.DomUtil.create('div', 'info legend');
-    div.style.position = 'fixed'; // Hace que la leyenda sea fija y no afecte el flujo
-    div.style.bottom = '20px'; // Asegura que esté en la parte inferior de la pantalla
-    div.style.right = '40px'; // Ajusta la posición desde la izquierda
-    div.style.backgroundColor = '#6EAA39';
-    div.style.color = 'white';
-    div.style.padding = '10px';
-    div.style.borderRadius = '5px';
+    var div = L.DomUtil.create('div', 'info legend custom-legend');
+
     div.style.display = 'none';
-    div.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
+
 
     // Contenido de la leyenda
     div.innerHTML += "<h4>Leyenda</h4>";
@@ -126,28 +169,17 @@ legend.onAdd = function (map) {
   }
     return div;
 };
-
 // Añadir la leyenda al mapa
 legend.addTo(map);
 
-// Crear un botón para mostrar/ocultar la leyenda
 var legendToggleButton = L.control({ position: 'bottomright' });
-
 legendToggleButton.onAdd = function (map) {
-    var button = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+    var button = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom legend-toggle-btn');
     button.innerHTML = '<img src="icons/leyenda.svg" style="width: 30px; height: 30px;">';
-    button.style.backgroundColor = '#6EAA39';
-    button.style.cursor = 'pointer';
-    button.style.width = '40px';
-    button.style.height = '40px';
-    button.style.alignItems = 'center';
-    button.style.justifyContent = 'center';
-    button.style.display = 'flex';
-    button.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
 
     // Evento de clic para alternar la visibilidad de la leyenda
     button.onclick = function () {
-        var legendDiv = document.querySelector('.info.legend');
+        var legendDiv = document.querySelector('.custom-legend');
         if (legendDiv.style.display === 'none') {
             legendDiv.style.display = 'block';
         } else {
@@ -162,36 +194,29 @@ legendToggleButton.onAdd = function (map) {
 legendToggleButton.addTo(map);
 
 
-// Mapas base
-var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
+// Definir Mapas base
+const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap'
 })
 
-var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+const Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 }).addTo(map);
 
-var darkmap = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
-	minZoom: 0,
-	maxZoom: 20,
-	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	ext: 'png'
+const darkmap = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
+minZoom: 0,
+maxZoom: 20,
+attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+ext: 'png'
 })
 
-var baseMaps = {
-    "Open Street Map": osm,
-    "Esri World Imagery": Esri_WorldImagery,
-    "Dark Map": darkmap
+const baseMaps = {
+"Open Street Map": osm,
+"Esri World Imagery": Esri_WorldImagery,
+"Dark Map": darkmap
 };
 
-const aliasCapas = {
-  "comunas": "Comunas",
-  "barrios": "Barrios",
-  "estaciones_tmasivo": "Estaciones de Transporte Masivo",
-  "rutas_transporte": "Rutas de Buses",
-  "paradas_wgs84": "Paradas de Buses"
-};
 
 // Control de capas para los overlays
 var overlayMaps = {};
@@ -200,7 +225,7 @@ var overlayMaps = {};
 var layerControl = L.control.layers(baseMaps, overlayMaps, ).addTo(map);
 
 
-
+// ******** FUNCIONES DE ESTILO DE CAPAS ********
 
 // Función para definir el estilo de la capa de Comunas
 function estiloComunas() {
@@ -225,61 +250,16 @@ function estiloBarrios() {
 
 // Función para definir el estilo de la capa Estaciones
 function estiloEstaciones(feature, latlng) {
-  const iconosEstaciones = {
-    "Línea 1": { url: "icons/metroplus_linea1.svg", size: [16, 16] },
-    "Línea 2": { url: "icons/metroplus_linea2.svg", size: [16, 16] },
-    "Línea A": { url: "icons/metro_lineaA.svg", size: [20, 20] },
-    "Línea B": { url: "icons/metro_lineaB.svg", size: [20, 20] },
-    "Línea H": { url: "icons/metrocable_lineaH.svg", size: [18, 18] },
-    "Línea J": { url: "icons/metrocable_lineaJ.svg", size: [18, 18] },
-    "Línea K": { url: "icons/metrocable_lineaK.svg", size: [18, 18] },
-    "Línea L": { url: "icons/metrocable_lineaL.svg", size: [18, 18] },
-    "Línea M": { url: "icons/metrocable_lineaM.svg", size: [18, 18] },
-    "Línea P": { url: "icons/metrocable_lineaP.svg", size: [18, 18] },
-    "Línea T-A": { url: "icons/tranvia_lineaT.svg", size: [20, 20] }
-  }
   const linea = feature.properties.linea;
   const iconConfig = iconosEstaciones[linea]
 
   const icono = L.icon({
     iconUrl: iconConfig.url,
-    iconSize: iconConfig.size,      // Tamaño del ícono
-    iconAnchor: [iconConfig.size[0] / 2, iconConfig.size[1] / 2] // Centro del ícono
+    iconSize: iconConfig.size,      
+    iconAnchor: [iconConfig.size[0] / 2, iconConfig.size[1] / 2] 
   });
 
   return L.marker(latlng, { icon: icono });
-}
-
-
-
-const colorLineas = {
-  "Línea 1": "#007C88",
-  "Línea 2": "#60A9AF",
-  "Línea A": "#005496",
-  "Línea B": "#F6821F",
-  "Línea H": "#DC3591",
-  "Línea J": "#FDB913",
-  "Línea K": "#ACD258",
-  "Línea L": "#98671B",
-  "Línea M": "#6E2C8D",
-  "Línea P": "#ED1A3B",
-  "Línea T-A": "#1D9D48",
-  "default": "gray",
-};
-
-const iconosLineas={
-  "Línea 1": "icons/metroplus_linea1.svg",
-  "Línea 2": "icons/metroplus_linea2.svg",
-  "Línea A": "icons/metro_lineaA.svg",
-  "Línea B": "icons/metro_lineaB.svg",
-  "Línea H": "icons/metrocable_lineaH.svg",
-  "Línea J": "icons/metrocable_lineaJ.svg",
-  "Línea K": "icons/metrocable_lineaK.svg",
-  "Línea L": "icons/metrocable_lineaL.svg",
-  "Línea M": "icons/metrocable_lineaM.svg",
-  "Línea P": "icons/metrocable_lineaP.svg",
-  "Línea T-A": "icons/tranvia_lineaT.svg",
-  "default": "icons/metroplus_linea1.svg",
 }
 
 // Función para definir el estilo de la capa Paradas
@@ -337,7 +317,8 @@ const estilosCapas = {
 };
 
 
-// Función para definir el estilo del popup de "estaciones_tmasivo"
+// ******** FUNCIONES DE POPUP ********
+// Función para definir el estilo del popup de estaciones del sistema integrado
 function popupEstaciones(feature, layer) {
   // Verificar si las propiedades existen antes de mostrarlas
   const nombre = feature.properties.nombre || "N/A";
@@ -361,11 +342,11 @@ function popupEstaciones(feature, layer) {
         </ul>
       </div>
   `;
-
   // Asociar el contenido del popup al feature
   layer.bindPopup(popupContent);
 }
 
+// Función para definir el estilo del popup de paradas de buses
 function popupParadas(feature, layer) {
   const nro_parada = parseInt(feature.properties.nro_parada) || "N/A";
   const direccion = feature.properties.direccion || "N/A";
@@ -418,6 +399,7 @@ function popupParadas(feature, layer) {
     layer.bindPopup(popupContent);
 }
 
+//******** CARGUE DE CAPAS ********
 
 // Función para cargar todas las tablas con geometría y añadirlas al mapa
 fetch('/tablasgeo')
@@ -431,7 +413,7 @@ fetch('/tablasgeo')
 
             const layer = L.layerGroup();
             const alias = aliasCapas[nombreTabla] || nombreTabla;
-            layerControl.addOverlay(layer, alias); // Añadir al control de capas
+            layerControl.addOverlay(layer, alias); 
 
             // Cargar y añadir al mapa cada capa solo una vez
             if (nombreTabla === "comunas") {
@@ -440,7 +422,7 @@ fetch('/tablasgeo')
                     .then(data => {
                         const geoLayer = L.geoJSON(data, { style: estiloComunas });
                         layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                        layer.addTo(map); 
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
             } else if (nombreTabla === "barrios") {
@@ -449,7 +431,7 @@ fetch('/tablasgeo')
                     .then(data => {
                         const geoLayer = L.geoJSON(data, { style: estiloBarrios });
                         layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                        layer.addTo(map); 
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
             } else if (nombreTabla === "estaciones_tmasivo") {
@@ -461,7 +443,7 @@ fetch('/tablasgeo')
                             onEachFeature: popupEstaciones
                         });
                         layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                        layer.addTo(map);
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
             } else if (nombreTabla === "rutas_transporte") {
@@ -470,7 +452,7 @@ fetch('/tablasgeo')
                     .then(data => {
                         const geoLayer = L.geoJSON(data, { style: estiloRutas });
                         layer.addLayer(geoLayer);
-                        layer.addTo(map); // Añadir la capa al mapa al inicio
+                        layer.addTo(map); 
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
             } else if (nombreTabla === "paradas_wgs84") {
@@ -484,7 +466,7 @@ fetch('/tablasgeo')
                         });
                         clusterGroup.addLayer(geoLayer);
                         layer.addLayer(clusterGroup);
-                        layer.addTo(map); // Añadir el grupo de clusters al mapa al inicio
+                        layer.addTo(map);
                     })
                     .catch(err => console.error(`Error cargando datos para ${nombreTabla}:`, err));
             }
