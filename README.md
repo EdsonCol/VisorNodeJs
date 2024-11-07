@@ -2,6 +2,8 @@
 
 Este proyecto es un Geovisor interactivo desarrollado con **Node.js**, **Leaflet**, y **PostgreSQL**. Está diseñado para visualizar los elementos de los sistemas de transporte de Medellín, incluyendo estaciones de metro, metrocable, tranvía y paradas de buses.
 
+![image](https://github.com/user-attachments/assets/c32ff67e-476b-4b19-9074-e79dbdc7fd3a)
+
 ## Características Principales
 
 ### Funcionalidades del Mapa
@@ -44,6 +46,10 @@ Cada elemento del mapa incluye un **popup informativo** que muestra información
 
 -   **Estaciones de Transporte**: Incluyen el nombre, línea, y tipo de estación.
 -   **Paradas de Buses**: Detallan el número de parada, sistema, dirección, recorrido, ruta y empresa.
+
+![image](https://github.com/user-attachments/assets/766bedf7-72ef-4daa-958b-e00cc41fad98)
+
+![image](https://github.com/user-attachments/assets/d4dc44a9-f8d6-40b9-83ac-436c0397bceb)
 
 ## Créditos
 
