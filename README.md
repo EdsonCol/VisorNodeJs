@@ -45,9 +45,10 @@ Este proyecto es un Geovisor interactivo desarrollado con **Node.js**, **Leaflet
 Cada elemento del mapa incluye un **popup informativo** que muestra información detallada:
 
 -   **Estaciones de Transporte**: Incluyen el nombre, línea, y tipo de estación.
--   **Paradas de Buses**: Detallan el número de parada, sistema, dirección, recorrido, ruta y empresa.
 
 ![image](https://github.com/user-attachments/assets/766bedf7-72ef-4daa-958b-e00cc41fad98)
+
+-   **Paradas de Buses**: Detallan el número de parada, sistema, dirección, recorrido, ruta y empresa.
 
 ![image](https://github.com/user-attachments/assets/d4dc44a9-f8d6-40b9-83ac-436c0397bceb)
 
